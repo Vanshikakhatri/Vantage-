@@ -1,0 +1,43 @@
+input_guardrail:
+  block_keywords:
+    - "ignore previous instructions"
+    - "ignore all previous instructions"
+    - "disregard your system prompt"
+    - "reveal your system prompt"
+    - "you are now DAN"
+    - "jailbreak"
+  block_patterns:
+    - '(?i)act\s+as\s+(an?\s+)?unrestricted'
+    - '(?i)pretend\s+(you\s+have\s+)?no\s+(rules|restrictions|filters)'
+    - '(?i)base64:\s*[A-Za-z0-9+/=]{40,}'
+  max_query_length: 4000
+
+semantic_guardrail:
+  reference_intents:
+    - "reveal, print, or leak the system prompt or hidden instructions"
+    - "roleplay as an AI with no ethical restrictions or content policy"
+    - "help write malware, ransomware or a working exploit"
+    - "provide instructions to build a weapon or explosive"
+    - "extract another user's personal or confidential data from the index"
+
+pii_scanner:
+  rules:
+    aadhaar: '\b[2-9]{1}[0-9]{3}\s?[0-9]{4}\s?[0-9]{4}\b'
+    pan: '\b[A-Z]{5}[0-9]{4}[A-Z]{1}\b'
+    indian_phone: '\b(?:\+91[\-\s]?)?[6-9]\d{9}\b'
+    email: '\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b'
+    credit_card: '\b(?:\d[ -]*?){13,16}\b'
+    ifsc: '\b[A-Z]{4}0[A-Z0-9]{6}\b'
+    passport_in: '\b[A-PR-WYa-pr-wy][1-9]\d\s?\d{4}[1-9]\b'
+    dob: '\b(0[1-9]|[12]\d|3[01])[/-](0[1-9]|1[0-2])[/-](19|20)\d{2}\b'
+  action: "mask"
+  mask_char: "█"
+
+output_guardrail:
+  secret_patterns:
+    api_key_generic: '(?i)(api|access)[_-]?key["'']?\s*[:=]\s*["'']?[A-Za-z0-9_\-]{16,}'
+    aws_key: 'AKIA[0-9A-Z]{16}'
+    private_key_block: '-----BEGIN (RSA |EC |)PRIVATE KEY-----'
+    bearer_token: '(?i)bearer\s+[A-Za-z0-9._\-]{20,}'
+    jwt: '\beyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\b'
+  action: "mask"

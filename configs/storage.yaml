@@ -1,0 +1,14 @@
+storage:
+  sqlite:
+    path: "data/vantage.db"
+  faiss:
+    index_path: "data/faiss/index.faiss"
+    metadata_path: "data/faiss/metadata.json"
+  bm25:
+    index_path: "data/bm25/index.pkl"
+  graph:
+    path: "data/graph/knowledge_graph.gpickle"
+  uploads:
+    dir: "data/uploads"
+  audit_log:
+    path: "data/audit/audit_log.jsonl"

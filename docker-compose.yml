@@ -1,0 +1,51 @@
+# Runs Vantage fully offline: the app container + a local Ollama service.
+# Works unmodified on macOS (Apple Silicon), Linux and Windows Docker Desktop.
+#
+#   docker compose up --build
+#   docker compose exec ollama ollama pull llama3.2:3b
+#   docker compose exec ollama ollama pull qwen2.5:1.5b-instruct-q4_K_M
+#   docker compose exec ollama ollama pull qwen2.5-coder:7b-instruct-q4_K_M
+#   docker compose exec ollama ollama pull qwen2.5vl:3b   # needs Ollama >= 0.7.0 (image :latest is fine)
+#
+# On a machine with an NVIDIA GPU + nvidia-container-toolkit, uncomment the
+# `deploy.resources` block under `ollama` to enable GPU inference; it's left
+# off by default so the same file also runs CPU-only on macOS/Windows.
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    restart: unless-stopped
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+
+  vantage:
+    build: .
+    ports:
+      - "8501:8501"
+    environment:
+      - VANTAGE_DATA_DIR=/app/data
+      - VANTAGE_MODELS_DIR=/app/models
+      - VANTAGE_OLLAMA_HOST=http://ollama:11434
+    volumes:
+      - vantage-data:/app/data
+      # Mount local sentence-transformers weights (bge-m3, bge-reranker-v2-m3,
+      # bge-small-en-v1.5) here for zero-download offline startup — see
+      # OFFLINE_SETUP.md. Safe to leave empty; the app falls back to the HF
+      # cache / network until weights are copied in.
+      - ./models:/app/models
+    depends_on:
+      - ollama
+    restart: unless-stopped
+
+volumes:
+  ollama-data:
+  vantage-data:

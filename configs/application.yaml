@@ -1,0 +1,31 @@
+app:
+  name: "Vantage"
+  tagline: "Governed Agentic RAG for Regulated Documents"
+  environment: "local"          # local | staging | prod
+  default_mode: "agentic"       # agentic | direct_rag
+
+compliance:
+  active_frameworks: ["DPDP_ACT_2023", "NIST_SP_800_53_R5"]
+
+pipeline:
+  reflection:
+    max_retries: 2
+    confidence_threshold: 5.5
+  retrieval:
+    dense_top_k: 15
+    sparse_top_k: 15
+    hybrid_fusion: "rrf"
+    rrf_k: 60
+    graph_hop_limit: 2
+    rerank_top_k: 6
+  agentic_rag:
+    max_search_rounds: 2        # extra re-searches the agent may do when evidence is weak
+    strong_rerank_score: 0.60   # top reranker score >= this -> evidence is clearly enough, no LLM grading
+    relevance_floor: 0.15       # top reranker score < this after all rounds -> "nothing relevant found"
+  validation:
+    correctness_floor: 4.0      # judge correctness below this vetoes a pass, whatever the other signals say
+    weights:
+      correctness: 0.4
+      completeness: 0.2
+      citations: 0.15
+      groundedness_cosine: 0.25

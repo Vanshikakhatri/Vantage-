@@ -1,0 +1,7 @@
+[
+  {"id": "q1", "question": "What personal data categories are covered under the ingested policy document?", "expected_grounded": 1},
+  {"id": "q2", "question": "What is the retention period specified for user consent records?", "expected_grounded": 1},
+  {"id": "q3", "question": "Which clause defines a Data Fiduciary's obligations on breach notification?", "expected_grounded": 1},
+  {"id": "q4", "question": "What is the capital of France?", "expected_grounded": 0},
+  {"id": "q5", "question": "Summarize the access-control requirements referenced across the ingested documents.", "expected_grounded": 1}
+]

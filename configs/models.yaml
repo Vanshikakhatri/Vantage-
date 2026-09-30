@@ -1,0 +1,63 @@
+# All models run fully offline through local Ollama + local sentence-transformers
+# weights. See ARCHITECTURE.md > "Model choices & why" for the comparison table.
+#
+# Offline setup: drop model weights under the directory named by the
+# VANTAGE_MODELS_DIR env var (defaults to ./models, or /app/models inside the
+# Docker image) — one subfolder per model, named after the last path segment
+# below (e.g. models/bge-m3, models/bge-reranker-v2-m3, models/bge-small-en-v1.5).
+# If a folder isn't there yet, the app falls back to the Hugging Face cache /
+# network so it keeps working while you're still populating the cache.
+# Ollama models (chat/router/code_tool/etc.) are pulled with `ollama pull <name>`
+# and served by a local Ollama daemon — no cloud API is ever called.
+
+ollama:
+  # Overridable at runtime with the VANTAGE_OLLAMA_HOST env var (see
+  # src/core/config.py) — e.g. "http://ollama:11434" when Ollama runs as
+  # its own Docker Compose service instead of on the host.
+  host: "http://localhost:11434"
+
+chat:
+  model: "llama3.2:3b"
+  temperature: 0.2
+
+router:
+  model: "qwen2.5:1.5b-instruct-q4_K_M"
+  temperature: 0.0
+
+code_tool:
+  model: "qwen2.5-coder:7b-instruct-q4_K_M"
+
+query_rewriter:
+  model: "qwen2.5:1.5b-instruct-q4_K_M"
+
+validation:
+  model: "qwen2.5:7b-instruct-q4_K_M"
+  confidence_threshold: 5.5
+
+semantic_guardrail:
+  model: "BAAI/bge-small-en-v1.5"
+  similarity_threshold: 0.78
+
+embeddings:
+  model: "BAAI/bge-m3"
+  dimension: 1024
+  device: null              # null = auto-detect (cuda > mps > cpu); set explicitly to force one
+
+reranker:
+  model: "BAAI/bge-reranker-v2-m3"
+
+vlm:
+  # Qwen2.5-VL (needs Ollama >= 0.7.0). 3b keeps small-GPU headroom next to the
+  # 7B chat/judge models; 7b is the automatic fallback for richer captions.
+  model: "qwen2.5vl:3b"
+  fallback_model: "qwen2.5vl:7b"
+
+# Agentic RAG controller: grades retrieved passages and proposes a better search
+# query when evidence is weak. Same tag as `validation` on purpose so Ollama
+# reuses the already-loaded 7B instead of loading another model.
+rag_agent:
+  model: "qwen2.5:7b-instruct-q4_K_M"
+  temperature: 0.0
+
+graph_rag:
+  extraction_model: "qwen2.5:1.5b-instruct-q4_K_M"

@@ -1,0 +1,31 @@
+# ---- UI ----
+streamlit>=1.40
+
+# ---- Core RAG ----
+sentence-transformers>=3.0.0      # BGE-M3 embeddings + BGE reranker
+faiss-cpu>=1.8.0                  # dense vector index (swap for faiss-gpu if you have CUDA)
+rank-bm25>=0.2.2                  # sparse retriever
+networkx>=3.3                     # GraphRAG knowledge graph + multi-hop traversal
+
+# ---- Agentic / LLM orchestration ----
+ollama>=0.3.0                     # local LLM + VLM client
+pydantic>=2.7
+
+# ---- Ingestion ----
+pypdf>=4.2.0
+pymupdf>=1.24.0                   # PDF -> page images (for VLM captioning) + text
+Pillow>=10.3.0
+
+# ---- Guardrails / PII ----
+presidio-analyzer>=2.2.354        # optional, used if installed; regex fallback always available
+regex>=2024.5.15
+
+# ---- Eval / report ----
+numpy>=1.26
+pandas>=2.2
+openpyxl>=3.1
+scikit-learn>=1.5                 # cosine similarity, confusion-matrix style aggregation
+
+# ---- Misc ----
+PyYAML>=6.0.1
+python-dotenv>=1.0.1
